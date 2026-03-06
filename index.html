@@ -1,389 +1,769 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ScentAI — L'Âme des Parfums</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@300;400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --gold: #C9A84C;
       --gold-light: #e2c97e;
-      --cream: #FAF8F4;
-      --dark: #1a1814;
-      --mid: #4a4540;
-      --border: rgba(201,168,76,0.25);
+      --gold-dim: rgba(201,168,76,0.15);
+      --black: #0a0908;
+      --dark: #111009;
+      --surface: #161410;
+      --surface2: #1e1b15;
+      --text: #f0ead8;
+      --text-dim: #8a7f68;
+      --border: rgba(201,168,76,0.2);
     }
 
-    html, body {
-      height: 100%;
-      background: var(--cream);
-      color: var(--dark);
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
       font-family: 'Cormorant Garamond', serif;
+      min-height: 100vh;
       overflow-x: hidden;
+      cursor: default;
     }
 
-    /* Subtle grain texture */
+    /* Ambient background */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 80% 80%, rgba(201,168,76,0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
       background-size: 200px;
       pointer-events: none;
       z-index: 0;
-      opacity: 0.5;
+      opacity: 0.6;
     }
 
-    /* HEADER */
+    /* ─── HEADER ─── */
     header {
       position: fixed;
       top: 0; left: 0; right: 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1.6rem 3rem;
+      padding: 1.4rem 3rem;
       border-bottom: 1px solid var(--border);
-      background: rgba(250,248,244,0.92);
-      backdrop-filter: blur(8px);
+      background: rgba(10,9,8,0.85);
+      backdrop-filter: blur(12px);
       z-index: 100;
     }
 
     .logo {
       font-family: 'Cinzel', serif;
       font-weight: 300;
-      font-size: 1.1rem;
-      letter-spacing: 0.35em;
-      color: var(--dark);
+      font-size: 1rem;
+      letter-spacing: 0.4em;
+      color: var(--text);
     }
-    .logo span { color: var(--gold); }
+    .logo .ai { color: var(--gold); font-weight: 600; }
 
-    .tagline-header {
+    .header-right {
       font-family: 'Cinzel', serif;
-      font-size: 0.62rem;
+      font-size: 0.55rem;
       letter-spacing: 0.3em;
-      color: var(--mid);
+      color: var(--text-dim);
       text-transform: uppercase;
     }
 
-    /* HERO */
+    /* ─── HERO ─── */
     .hero {
+      position: relative;
+      z-index: 1;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 8rem 2rem 5rem;
-      position: relative;
-      z-index: 1;
+      padding: 9rem 2rem 6rem;
+      text-align: center;
     }
 
-    .hero-badge {
-      display: flex;
+    .badge {
+      display: inline-flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.8rem;
       font-family: 'Cinzel', serif;
-      font-size: 0.6rem;
+      font-size: 0.58rem;
       letter-spacing: 0.35em;
       color: var(--gold);
       text-transform: uppercase;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2.8rem;
       opacity: 0;
-      animation: fadeUp 0.8s ease forwards 0.2s;
+      animation: fadeUp 0.8s ease forwards 0.1s;
     }
-    .hero-badge::before, .hero-badge::after {
-      content: '';
-      display: block;
-      width: 30px;
-      height: 1px;
-      background: var(--gold);
-      opacity: 0.5;
+    .badge-line {
+      width: 35px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold));
+      opacity: 0.6;
     }
-
-    .star { color: var(--gold); font-size: 0.8rem; }
+    .badge-line.rev { background: linear-gradient(to left, transparent, var(--gold)); }
 
     h1 {
       font-family: 'Cinzel', serif;
       font-weight: 300;
-      font-size: clamp(3.5rem, 9vw, 7rem);
-      letter-spacing: 0.08em;
+      font-size: clamp(4rem, 10vw, 8rem);
+      letter-spacing: 0.1em;
       line-height: 1;
-      margin-bottom: 1rem;
+      color: var(--text);
+      margin-bottom: 1.2rem;
       opacity: 0;
-      animation: fadeUp 0.9s ease forwards 0.4s;
+      animation: fadeUp 1s ease forwards 0.3s;
     }
-    h1 .ai { color: var(--gold); font-weight: 400; }
+    h1 .ai {
+      color: var(--gold);
+      font-weight: 600;
+    }
 
-    .subtitle {
+    .hero-sub {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: 1.25rem;
-      color: var(--mid);
-      letter-spacing: 0.05em;
-      margin-bottom: 3.5rem;
+      font-size: 1.3rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      margin-bottom: 4rem;
       opacity: 0;
-      animation: fadeUp 0.9s ease forwards 0.6s;
+      animation: fadeUp 1s ease forwards 0.5s;
     }
 
-    /* SEARCH BOX */
-    .search-card {
+    /* ─── SEARCH BOX ─── */
+    .search-wrap {
       width: 100%;
-      max-width: 560px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.6);
-      backdrop-filter: blur(4px);
-      padding: 2.2rem 2rem 1.8rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.4rem;
+      max-width: 600px;
       opacity: 0;
-      animation: fadeUp 1s ease forwards 0.8s;
+      animation: fadeUp 1s ease forwards 0.7s;
     }
 
-    .search-card input {
+    .search-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2.5rem 2.5rem 2rem;
+      position: relative;
+    }
+    .search-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 60px; height: 1px;
+      background: var(--gold);
+    }
+
+    .search-input-wrap {
+      position: relative;
+      margin-bottom: 1.8rem;
+    }
+
+    .search-box input {
       width: 100%;
       background: transparent;
       border: none;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(201,168,76,0.3);
       outline: none;
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem;
-      color: var(--dark);
+      font-size: 1.15rem;
+      color: var(--text);
       text-align: center;
-      padding: 0.5rem 0;
-      letter-spacing: 0.05em;
+      padding: 0.6rem 0;
+      letter-spacing: 0.06em;
       transition: border-color 0.3s;
     }
-    .search-card input::placeholder { color: #b0a898; font-style: italic; }
-    .search-card input:focus { border-bottom-color: var(--gold); }
+    .search-box input::placeholder { color: var(--text-dim); font-style: italic; }
+    .search-box input:focus { border-bottom-color: var(--gold); }
 
-    .btn-analyser {
+    .btn {
+      width: 100%;
       font-family: 'Cinzel', serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
       text-transform: uppercase;
-      color: var(--dark);
-      background: transparent;
-      border: 1px solid var(--border);
-      padding: 0.8rem 2.5rem;
-      cursor: pointer;
-      transition: background 0.3s, color 0.3s, border-color 0.3s;
-    }
-    .btn-analyser:hover {
+      color: var(--black);
       background: var(--gold);
-      color: #fff;
-      border-color: var(--gold);
+      border: none;
+      padding: 1rem 2rem;
+      cursor: pointer;
+      transition: background 0.3s, letter-spacing 0.3s;
+      position: relative;
+      overflow: hidden;
     }
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.08);
+      transform: translateX(-100%);
+      transition: transform 0.4s ease;
+    }
+    .btn:hover { background: var(--gold-light); letter-spacing: 0.5em; }
+    .btn:hover::after { transform: translateX(0); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* EXAMPLES */
-    .examples-section {
-      margin-top: 3rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.2rem;
+    /* ─── EXAMPLES ─── */
+    .examples {
+      margin-top: 2.5rem;
       opacity: 0;
-      animation: fadeUp 1s ease forwards 1s;
+      animation: fadeUp 1s ease forwards 0.9s;
     }
 
     .examples-label {
       font-family: 'Cinzel', serif;
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       letter-spacing: 0.35em;
+      color: var(--text-dim);
       text-transform: uppercase;
-      color: var(--mid);
+      margin-bottom: 1rem;
     }
 
-    .examples-pills {
+    .pills {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 0.6rem;
+      gap: 0.5rem;
     }
 
     .pill {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: 0.95rem;
-      color: var(--mid);
-      border: 1px solid var(--border);
-      padding: 0.4rem 1.1rem;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      border: 1px solid rgba(201,168,76,0.18);
+      padding: 0.35rem 1rem;
       cursor: pointer;
-      transition: border-color 0.3s, color 0.3s;
-      letter-spacing: 0.03em;
+      transition: all 0.3s;
+      letter-spacing: 0.04em;
     }
     .pill:hover {
       border-color: var(--gold);
       color: var(--gold);
+      background: var(--gold-dim);
     }
 
-    /* RESULT AREA */
-    .result-area {
-      width: 100%;
-      max-width: 660px;
-      margin-top: 2.5rem;
-      border-top: 1px solid var(--border);
-      padding-top: 2rem;
+    /* ─── RESULT SECTION ─── */
+    #result-section {
+      position: relative;
+      z-index: 1;
       display: none;
-      opacity: 0;
-      transition: opacity 0.6s ease;
+      padding: 4rem 2rem 6rem;
+      max-width: 900px;
+      margin: 0 auto;
+      animation: fadeUp 0.7s ease forwards;
     }
-    .result-area.visible {
-      display: block;
-      opacity: 1;
+
+    .result-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
     }
-    .result-title {
+
+    .result-name {
+      font-family: 'Cinzel', serif;
+      font-weight: 300;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: var(--text);
+      letter-spacing: 0.08em;
+      margin-bottom: 0.3rem;
+    }
+
+    .result-brand {
       font-family: 'Cinzel', serif;
       font-size: 0.65rem;
-      letter-spacing: 0.3em;
+      letter-spacing: 0.4em;
       color: var(--gold);
       text-transform: uppercase;
-      margin-bottom: 1rem;
-      text-align: center;
     }
-    .result-content {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.05rem;
-      color: var(--mid);
-      line-height: 1.8;
-      text-align: center;
-      font-style: italic;
-      white-space: pre-wrap;
-    }
-    .loading-dots {
+
+    .result-meta {
       display: flex;
       justify-content: center;
-      gap: 0.4rem;
-      padding: 1rem 0;
-    }
-    .loading-dots span {
-      width: 5px; height: 5px;
-      background: var(--gold);
-      border-radius: 50%;
-      animation: dot 1.2s infinite;
-    }
-    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes dot {
-      0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
-      40% { opacity: 1; transform: scale(1); }
+      gap: 2rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
     }
 
-    /* DECORATIVE LINE */
-    .deco-line {
-      width: 60px;
+    .meta-item {
+      text-align: center;
+    }
+    .meta-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.5rem;
+      letter-spacing: 0.3em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .meta-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      color: var(--gold-light);
+    }
+
+    .result-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      line-height: 1.9;
+      color: var(--text-dim);
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+
+    /* ─── GRID SECTIONS ─── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1.8rem;
+    }
+
+    .card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.35em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .card-title::after {
+      content: '';
+      flex: 1;
       height: 1px;
-      background: linear-gradient(to right, transparent, var(--gold), transparent);
-      margin: 2rem auto 0;
+      background: var(--border);
+    }
+
+    /* NOTES PYRAMID */
+    .notes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+    }
+    .notes-col { text-align: center; }
+    .notes-col-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.5rem;
+      letter-spacing: 0.25em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+    .note-tag {
+      display: inline-block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem;
+      color: var(--text);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.6rem;
+      margin: 0.2rem;
+      letter-spacing: 0.03em;
+    }
+
+    /* SCORES */
+    .scores-list { display: flex; flex-direction: column; gap: 1rem; }
+    .score-row { display: flex; align-items: center; gap: 1rem; }
+    .score-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      width: 120px;
+      flex-shrink: 0;
+    }
+    .score-bar-wrap {
+      flex: 1;
+      height: 2px;
+      background: rgba(255,255,255,0.07);
+      position: relative;
+    }
+    .score-bar {
+      height: 100%;
+      background: linear-gradient(to right, var(--gold), var(--gold-light));
+      transition: width 1s ease;
+    }
+    .score-val {
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      color: var(--gold);
+      width: 20px;
+      text-align: right;
+    }
+
+    /* TAGS */
+    .tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .tag {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.9rem;
+    }
+
+    /* DUPES */
+    .dupes-list { display: flex; flex-direction: column; gap: 1rem; }
+    .dupe-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.2rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      transition: border-color 0.3s;
+    }
+    .dupe-item:hover { border-color: var(--gold); }
+    .dupe-info { flex: 1; }
+    .dupe-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      color: var(--text);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.2rem;
+    }
+    .dupe-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+    .dupe-right { text-align: right; }
+    .dupe-sim {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      color: var(--gold);
+      margin-bottom: 0.2rem;
+    }
+    .dupe-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+    .dupe-type {
+      display: inline-block;
+      font-family: 'Cinzel', serif;
+      font-size: 0.45rem;
+      letter-spacing: 0.2em;
+      padding: 0.2rem 0.5rem;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-top: 0.4rem;
+    }
+
+    /* LOADING */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 4rem 0;
+    }
+    .loading-ring {
+      width: 50px; height: 50px;
+      border: 1px solid var(--border);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+    }
+    .loading-text {
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* FULL-WIDTH CARD */
+    .card-full {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ERROR */
+    .error-msg {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      color: #c0634a;
+      font-size: 1.1rem;
+      padding: 2rem;
+    }
+
+    /* DIVIDER */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border), transparent);
+      margin: 1.5rem 0;
     }
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
+      from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
 
-    @media (max-width: 600px) {
-      header { padding: 1.2rem 1.5rem; }
-      .search-card { padding: 1.5rem 1.2rem; }
+    @media (max-width: 640px) {
+      header { padding: 1rem 1.5rem; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .notes-grid { grid-template-columns: 1fr; }
+      .search-box { padding: 1.8rem 1.4rem 1.5rem; }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="logo">S C E N T<span>AI</span></div>
-    <div class="tagline-header">L'Âme des Parfums</div>
+    <div class="logo">S C E N T<span class="ai">AI</span></div>
+    <div class="header-right">Intelligence Olfactive</div>
   </header>
 
-  <main class="hero">
-
-    <div class="hero-badge">
-      <span class="star">✦</span>
-      Intelligence Olfactive
-      <span class="star">✦</span>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="badge">
+      <span class="badge-line"></span>
+      ✦ Intelligence Olfactive ✦
+      <span class="badge-line rev"></span>
     </div>
 
     <h1>S C E N T<span class="ai">AI</span></h1>
-    <p class="subtitle">Découvrez l'âme de chaque parfum</p>
+    <p class="hero-sub">Découvrez l'âme de chaque parfum</p>
 
-    <div class="search-card">
-      <input
-        type="text"
-        id="parfumInput"
-        placeholder="Entrez un parfum... ex: Sauvage Dior, N°5 Chanel..."
-      />
-      <button class="btn-analyser" onclick="analyser()">Analyser</button>
-    </div>
-
-    <div class="examples-section">
-      <div class="examples-label">Exemples</div>
-      <div class="examples-pills">
-        <div class="pill" onclick="setParfum('Sauvage Dior')">Sauvage Dior</div>
-        <div class="pill" onclick="setParfum('N°5 Chanel')">N°5 Chanel</div>
-        <div class="pill" onclick="setParfum('Baccarat Rouge 540')">Baccarat Rouge 540</div>
-        <div class="pill" onclick="setParfum('Aventus Creed')">Aventus Creed</div>
-        <div class="pill" onclick="setParfum('La Vie Est Belle')">La Vie Est Belle</div>
+    <div class="search-wrap">
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <input
+            type="text"
+            id="perfumeInput"
+            placeholder="Entrez un parfum... ex: Sauvage Dior, N°5 Chanel..."
+            autocomplete="off"
+          />
+        </div>
+        <button class="btn" id="analyseBtn" onclick="analyser()">Analyser</button>
       </div>
     </div>
 
-    <div class="result-area" id="resultArea">
-      <div class="result-title">✦ Analyse Olfactive ✦</div>
-      <div class="result-content" id="resultContent"></div>
-      <div class="deco-line"></div>
+    <div class="examples">
+      <div class="examples-label">Exemples</div>
+      <div class="pills">
+        <div class="pill" onclick="quick('Sauvage Dior')">Sauvage Dior</div>
+        <div class="pill" onclick="quick('N°5 Chanel')">N°5 Chanel</div>
+        <div class="pill" onclick="quick('Baccarat Rouge 540')">Baccarat Rouge 540</div>
+        <div class="pill" onclick="quick('Aventus Creed')">Aventus Creed</div>
+        <div class="pill" onclick="quick('Nishane Ani')">Nishane Ani</div>
+      </div>
     </div>
+  </section>
 
-  </main>
+  <!-- RESULT -->
+  <section id="result-section"></section>
 
   <script>
-    function setParfum(name) {
-      document.getElementById('parfumInput').value = name;
+    function quick(name) {
+      document.getElementById('perfumeInput').value = name;
       analyser();
     }
 
     async function analyser() {
-      const input = document.getElementById('parfumInput').value.trim();
+      const input = document.getElementById('perfumeInput').value.trim();
       if (!input) return;
 
-      const area = document.getElementById('resultArea');
-      const content = document.getElementById('resultContent');
+      const section = document.getElementById('result-section');
+      const btn = document.getElementById('analyseBtn');
 
-      area.style.display = 'block';
-      setTimeout(() => area.style.opacity = '1', 10);
-      content.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div>`;
+      section.style.display = 'block';
+      btn.disabled = true;
+      btn.textContent = '...';
+
+      section.innerHTML = `
+        <div class="loading">
+          <div class="loading-ring"></div>
+          <div class="loading-text">Analyse en cours</div>
+        </div>`;
+
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
       try {
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-20250514",
-            max_tokens: 1000,
-            system: `Tu es ScentAI, un expert en parfumerie de haute volée avec une plume poétique et raffinée. 
-Quand on te soumet un parfum, tu rédiges une analyse olfactive courte (150-200 mots) en français, élégante et évocatrice.
-Structure ton analyse en 3 parties fluides : la première impression (tête), le cœur olfactif, et le sillage (fond).
-Inclus les notes principales, la famille olfactive, l'émotion ou l'univers qu'il évoque.
-Ton style est celui d'un poète parfumeur : précis, sensuel, mémorable. Pas de bullet points, juste de la prose sublime.`,
-            messages: [{ role: "user", content: `Analyse le parfum : ${input}` }]
-          })
+        const res = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ perfume: input })
         });
 
-        const data = await response.json();
-        const text = data.content?.map(b => b.text || '').join('') || "Parfum non reconnu.";
-        content.innerHTML = `<span>${text}</span>`;
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erreur serveur');
 
+        renderResult(data);
       } catch (err) {
-        content.innerHTML = `<span style="color:#b0a898">Une erreur est survenue. Veuillez réessayer.</span>`;
+        section.innerHTML = `<div class="error-msg">✦ ${err.message} ✦</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Analyser';
       }
     }
 
-    document.getElementById('parfumInput').addEventListener('keydown', e => {
+    function bar(score) {
+      return `<div class="score-bar" style="width:${score * 10}%"></div>`;
+    }
+
+    function renderResult(d) {
+      const section = document.getElementById('result-section');
+
+      const notesHTML = (arr) => arr.map(n => `<span class="note-tag">${n}</span>`).join('');
+      const tagHTML = (arr) => arr.map(t => `<span class="tag">${t}</span>`).join('');
+
+      const dupesHTML = (d.dupes || []).map(dp => `
+        <div class="dupe-item">
+          <div class="dupe-info">
+            <div class="dupe-name">${dp.name}</div>
+            <div class="dupe-brand">${dp.brand}</div>
+            <div class="dupe-type">${dp.type || 'alternatif'}</div>
+          </div>
+          <div class="dupe-right">
+            <div class="dupe-sim">${dp.similarite}%</div>
+            <div class="dupe-price">${dp.prix}</div>
+          </div>
+        </div>
+      `).join('');
+
+      section.innerHTML = `
+        <div class="result-header">
+          <div class="result-brand">${d.brand || ''} · ${d.year || ''} · ${d.concentration || ''}</div>
+          <h2 class="result-name">${d.name || ''}</h2>
+          <div class="result-meta">
+            <div class="meta-item">
+              <div class="meta-label">Famille</div>
+              <div class="meta-value">${d.family || '—'}</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Prix</div>
+              <div class="meta-value">${d.price || '—'}</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Moment</div>
+              <div class="meta-value">${d.moment || '—'}</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Profil</div>
+              <div class="meta-value">${d.age_cible || '—'}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-desc">${d.description || ''}</div>
+
+        <div class="card-full">
+          <div class="card-title">✦ Pyramide Olfactive</div>
+          <div class="notes-grid">
+            <div class="notes-col">
+              <div class="notes-col-label">Tête</div>
+              ${notesHTML(d.notes?.top || [])}
+            </div>
+            <div class="notes-col">
+              <div class="notes-col-label">Cœur</div>
+              ${notesHTML(d.notes?.heart || [])}
+            </div>
+            <div class="notes-col">
+              <div class="notes-col-label">Fond</div>
+              ${notesHTML(d.notes?.base || [])}
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">✦ Scores</div>
+            <div class="scores-list">
+              <div class="score-row">
+                <div class="score-label">Sillage</div>
+                <div class="score-bar-wrap">${bar(d.scores?.sillage || 0)}</div>
+                <div class="score-val">${d.scores?.sillage || 0}</div>
+              </div>
+              <div class="score-row">
+                <div class="score-label">Longévité</div>
+                <div class="score-bar-wrap">${bar(d.scores?.longevite || 0)}</div>
+                <div class="score-val">${d.scores?.longevite || 0}</div>
+              </div>
+              <div class="score-row">
+                <div class="score-label">Unicité</div>
+                <div class="score-bar-wrap">${bar(d.scores?.unicite || 0)}</div>
+                <div class="score-val">${d.scores?.unicite || 0}</div>
+              </div>
+              <div class="score-row">
+                <div class="score-label">Qualité/Prix</div>
+                <div class="score-bar-wrap">${bar(d.scores?.rapport_qualite_prix || 0)}</div>
+                <div class="score-val">${d.scores?.rapport_qualite_prix || 0}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">✦ Usage</div>
+            <div class="meta-label" style="margin-bottom:0.6rem">Saisons</div>
+            <div class="tags-row" style="margin-bottom:1.2rem">${tagHTML(d.saisons || [])}</div>
+            <div class="meta-label" style="margin-bottom:0.6rem">Occasions</div>
+            <div class="tags-row">${tagHTML(d.occasions || [])}</div>
+          </div>
+        </div>
+
+        <div class="card-full">
+          <div class="card-title">✦ Dupes & Alternatives Premium</div>
+          <div class="dupes-list">${dupesHTML || '<div class="dupe-brand" style="text-align:center;padding:1rem">Aucun dupe trouvé</div>'}</div>
+        </div>
+
+        <div style="text-align:center;margin-top:2rem">
+          <button class="btn" style="width:auto;padding:0.9rem 3rem" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+            Nouvelle Recherche
+          </button>
+        </div>
+      `;
+    }
+
+    document.getElementById('perfumeInput').addEventListener('keydown', e => {
       if (e.key === 'Enter') analyser();
     });
   </script>
-
 </body>
 </html>
